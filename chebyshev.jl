@@ -18,7 +18,7 @@ end
 """
     uni(n)
 
-Return uniform gridpoints for grid size = n, [0,2pi).
+Return uniform gridpoints for grid size = n, [0,1).
 appropriate for fourier transforms
 
 # Examples
@@ -26,7 +26,7 @@ julia> uni(4)
 0.0:1.5707963267948966:4.71238898038469
 """
 function uni(n)
-	 (0:(n-1)) .* (2.0*pi / n)
+	 (0:(n-1)) .* (1.0 / n)
 end
 
 
@@ -327,7 +327,13 @@ function icf_fft2!(x)
     x *= sc
     return 0
 end
-        
+
+function cf_fft2_p2(x)
+    m,n = size(x)
+    sc = 1.0 / (m-1)
+    y = fft(x,2)
+    return y
+end
 
 
     

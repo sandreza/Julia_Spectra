@@ -5,6 +5,7 @@ using LinearAlgebra
 #make the code portable
 a1 = typeof(spectral_matrix(4,1))
 a2 = typeof(zeros(4))
+a2c = typeof(zeros(2)*im)
 a3 = typeof(lu([1 2; 3 4]))
 #greens function for D^2-k^2
 #implicitly constructed via two Tridiagonal matrices and
@@ -39,6 +40,20 @@ end
 
 #solve with homogoneous boundary conditions
 function solveh(g::greens, fp::a2)
+    yp = anti_deriv(fp)  #find the particular solution
+    yp[n] = 0
+    yp = g.m1 \ yp
+    yp = anti_deriv(yp)
+    yp = g.m2 \ yp
+    lhs = zeros(2)      #satisfy the boundary conditions
+    lhs[1] = - left(yp)
+    lhs[2] = - right(yp)
+    c = g.bc \ lhs
+    @. yp = c[1] * g.y1 + c[2] * g.y2 + yp #construct solution from homog and particular solutions
+    return yp
+end
+#solve with homogoneous boundary conditions with complex values for forcing
+function solveh_c(g::greens, fp::a2c)
     yp = anti_deriv(fp)  #find the particular solution
     yp[n] = 0
     yp = g.m1 \ yp
