@@ -15,6 +15,20 @@ function cheb(n)
 	 cos.( (0:(n-1)) .* (pi / (n-1)))
 end
 
+"""
+    uni(n)
+
+Return uniform gridpoints for grid size = n, [0,2pi).
+appropriate for fourier transforms
+
+# Examples
+julia> uni(4)
+0.0:1.5707963267948966:4.71238898038469
+"""
+function uni(n)
+	 (0:(n-1)) .* (2.0*pi / n)
+end
+
 
 """
 requires FFTW
@@ -258,7 +272,61 @@ function dright(x)
     return sum
 end
 
+"""
+computs the chebyshev fourier transform in one direction and 
+"""
 
+function cf_fft2(x)
+    n = length(x[:,1])
+    sc = 1.0 / (n-1)
+    y = copy(x)
+    FFTW.r2r!(y,FFTW.REDFT00,1)
+    y *= sc
+    y = fft(y,2)
+    return y
+end
+
+"""
+computs the chebyshev fourier transform in one direction and fourier in the other
+assumes data is real
+"""
+
+function icf_fft2(x)
+    sc = 0.5
+    y = real.(ifft(x,2))
+    FFTW.r2r!(y,FFTW.REDFT00,1)
+    y *= sc
+    return y
+end
+
+    
+
+"""
+computs the chebyshev transform in one direction and the fourier 
+transform in the other
+"""
+
+function cf_fft2!(x)
+    n = length(x[:,1])
+    sc = 1.0 / (n-1)
+    FFTW.r2r!(x,FFTW.REDFT00,1)
+    x *= sc
+    fft!(x,2)
+    return 
+end
+
+"""
+computs the chebyshev fourier transform in one direction and fourier in the other
+assumes data is real
+"""
+
+function icf_fft2!(x)
+    sc = 0.5
+    ifft!(x,2)
+    FFTW.r2r!(x,FFTW.REDFT00,1)
+    x *= sc
+    return 0
+end
         
 
 
