@@ -41,7 +41,7 @@ end
 #solve with homogoneous boundary conditions
 function solveh(g::greens, fp::a2)
     yp = anti_deriv(fp)  #find the particular solution
-    yp[n] = 0
+    yp[end] = 0
     yp = g.m1 \ yp
     yp = anti_deriv(yp)
     yp = g.m2 \ yp
@@ -55,7 +55,7 @@ end
 #solve with homogoneous boundary conditions with complex values for forcing
 function solveh_c(g::greens, fp::a2c)
     yp = anti_deriv(fp)  #find the particular solution
-    yp[n] = 0
+    yp[end] = 0
     yp = g.m1 \ yp
     yp = anti_deriv(yp)
     yp = g.m2 \ yp
@@ -70,7 +70,7 @@ end
 #solve with homogoneous boundary conditions, and return derivative of solution
 function solveh_wd(g::greens, fp::a2)
     yp = anti_deriv(fp)  #find the particular solution
-    yp[n] = 0
+    yp[end] = 0
     ydp = g.m1 \ yp
     yp = anti_deriv(ydp)
     yp = g.m2 \ yp
@@ -87,7 +87,7 @@ end
 #left boundary condition is 1 and right boundary condition is 0
 function solve(g::greens, fp::a2, bc::a2)
     yp = anti_deriv(fp)  #find the particular solution
-    yp[n] = 0
+    yp[end] = 0
     yp = g.m1 \ yp
     yp = anti_deriv(yp)
     yp = g.m2 \ yp
@@ -105,7 +105,7 @@ end
 #also gives the derivative of the solution
 function solve_wd(g::greens, fp::a2, bc::a2)
     yp = anti_deriv(fp)  #find the particular solution
-    yp[n] = 0
+    yp[end] = 0
     ydp = g.m1 \ yp
     yp = anti_deriv(ydp)
     yp = g.m2 \ yp

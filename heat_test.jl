@@ -1,11 +1,11 @@
-include("chebyshev.jl")
-include("ode.jl")
+#include("chebyshev.jl")
+#include("ode.jl")
 using Base.Threads
 #Threads.nthreads() = 1 #need to start julia with the same number of threads
-FFTW.set_num_threads(12)
+#FFTW.set_num_threads(12)
 #here we attempt to solve the heat equation in a domain
-m = 2^12 + 1 #number of chebyshev grid points
-n = 2^12 #number of uniform grid points
+m = 2^10 + 1 #number of chebyshev grid points
+n = 2^9 #number of uniform grid points
 
 z = cheb(m) #domain is from -1 to 1
 x = uni(n)  #domain is from 0 to 1 (no endpoint)
@@ -24,10 +24,8 @@ forcing = zeros(m,n) #initialize the forcing
 sc =  -(pi^2 + 4*pi^2)
 @threads for j in 1:n
     tmp = sin(2*pi*x[j])
-    for i in 1:m
-        tr_sol[i,j] = sin( pi * z[i])*tmp
-        forcing[i,j] = sc*tr_sol[i,j]
-    end
+    @. tr_sol[:,j] = sin( pi * z)*tmp
+    @. forcing[:,j] = sc*tr_sol[:,j]
 end
 
 #compute transform
@@ -103,4 +101,16 @@ end
     end
 end
 
+ll = 1000
+@time for k in 1:ll
+    for j in 1:(div(n,2)+1)
+        tmp1 = solveh(sg[j], tmpr[:,j])
+        tmp2 = solveh(sg[j], tmpi[:,j])
+        @. fp[:,j] =  tmp1 + tmp2*im
+    end
+    for j in (div(n,2)+2):n
+        fp[:,j] = conj.(fp[:,n+2-j])
+    end
+end
 =#
+

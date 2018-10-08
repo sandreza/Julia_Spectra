@@ -25,9 +25,41 @@ appropriate for fourier transforms
 julia> uni(4)
 0.0:1.5707963267948966:4.71238898038469
 """
+
 function uni(n)
 	 (0:(n-1)) .* (1.0 / n)
 end
+
+"""
+    wavevec(n)
+
+Return wavevector corresponding to uniform gridpoints for grid size = n, [0,1).
+appropriate for fourier transforms
+
+# Examples
+julia> wavevec(8)
+8-element Array{Float64,1}:
+   0.0              
+   6.283185307179586
+  12.566370614359172
+  18.84955592153876 
+ -25.132741228718345
+ -18.84955592153876 
+ -12.566370614359172
+  -6.283185307179586
+"""
+
+function wavevec(n)
+    kv = zeros(n)
+    for j in 1:div(n,2)
+        kv[j] = 2.0*pi*(j-1)
+    end
+    for j in (div(n,2)+1):n
+        kv[j] = (j-n-1)*2.0*pi
+    end
+    return kv
+end
+
 
 
 """
@@ -281,7 +313,7 @@ function cf_fft2(x)
     sc = 1.0 / (n-1)
     y = copy(x)
     FFTW.r2r!(y,FFTW.REDFT00,1)
-    y *= sc
+    @. y = sc * y
     y = fft(y,2)
     return y
 end
@@ -295,7 +327,7 @@ function icf_fft2(x)
     sc = 0.5
     y = real.(ifft(x,2))
     FFTW.r2r!(y,FFTW.REDFT00,1)
-    y *= sc
+    @. y = sc * y
     return y
 end
 
@@ -325,7 +357,7 @@ function icf_fft2!(x)
     ifft!(x,2)
     FFTW.r2r!(x,FFTW.REDFT00,1)
     x *= sc
-    return 0
+    return
 end
 
 function cf_fft2_p2(x)
